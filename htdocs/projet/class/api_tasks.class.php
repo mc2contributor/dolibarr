@@ -194,7 +194,7 @@ class Tasks extends DolibarrApi
 	 * Create task object
 	 *
 	 * @param   array   $request_data   Request data
-	 * @return  int     ID of project
+	 * @return  int     ID of task
 	 */
 	public function post($request_data = null)
 	{
@@ -272,6 +272,7 @@ class Tasks extends DolibarrApi
 	 *
 	 * @url	GET {id}/roles
 	 *
+	 * @return array
 	 */
 	public function getRoles($id, $userid = 0)
 	{
@@ -659,7 +660,7 @@ class Tasks extends DolibarrApi
 	 *
 	 * @return void
 	 */
-	protected function timespentRecordChecks($id, $timespent_id)
+	private function timespentRecordChecks($id, $timespent_id)
 	{
 		if ($this->task->fetch($id) <= 0) {
 			throw new RestException(404, 'Task not found');
