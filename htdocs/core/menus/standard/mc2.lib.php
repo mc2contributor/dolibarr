@@ -2069,15 +2069,10 @@ function get_left_menu_projects($mainmenu, &$newmenu, $usemenuhider = 1, $leftme
 			$newmenu->add("/projet/index.php?leftmenu=projects".($search_project_user ? '&search_project_user='.$search_project_user : ''), $titleboth, 0, $user->hasRight('projet',  'lire'), '', $mainmenu, 'projects', 0, '', '', '', img_picto('', 'project', 'class="paddingright pictofixedwidth"'));
 			$newmenu->add("/projet/card.php?leftmenu=projects&action=create".($search_project_user ? '&search_project_user='.$search_project_user : ''), $titlenew, 1, $user->hasRight('projet',  'creer'));
 
-			if (empty($conf->global->PROJECT_USE_OPPORTUNITIES)) {
-				$newmenu->add("/projet/list.php?leftmenu=projets".($search_project_user ? '&search_project_user='.$search_project_user : '').'&search_status=99', $langs->trans("List"), 1, $showmode, '', 'project', 'list');
-			} elseif (isset($conf->global->PROJECT_USE_OPPORTUNITIES) && $conf->global->PROJECT_USE_OPPORTUNITIES == 1) {
-				$newmenu->add("/projet/list.php?leftmenu=projets".($search_project_user ? '&search_project_user='.$search_project_user : ''), $langs->trans("List"), 1, $showmode, '', 'project', 'list');
-				$newmenu->add('/projet/list.php?mainmenu=project&amp;leftmenu=list&search_usage_opportunity=1&search_status=99&search_opp_status=openedopp&contextpage=lead', $langs->trans("ListOpenLeads"), 2, $showmode);
-				$newmenu->add('/projet/list.php?mainmenu=project&amp;leftmenu=list&search_opp_status=notopenedopp&search_status=99&contextpage=project', $langs->trans("ListOpenProjects"), 2, $showmode);
-			} elseif (isset($conf->global->PROJECT_USE_OPPORTUNITIES) && $conf->global->PROJECT_USE_OPPORTUNITIES == 2) {	// 2 = leads only
-				$newmenu->add('/projet/list.php?mainmenu=project&amp;leftmenu=list&search_usage_opportunity=1&search_status=99', $langs->trans("List"), 2, $showmode);
-			}
+			$newmenu->add("/projet/list.php?leftmenu=projets".($search_project_user ? '&search_project_user='.$search_project_user : ''), $langs->trans("List all"), 1, $showmode, '', 'project', 'list');
+			$newmenu->add('/projet/list.php?mainmenu=project&leftmenu=list&search_opp_status=notopenedopp&search_status=99&search_societe=!internal&contextpage=project', $langs->trans("List client projects"), 2, $showmode);
+			$newmenu->add('/projet/list.php?mainmenu=project&leftmenu=list&search_opp_status=notopenedopp&search_status=99&search_societe=internal&contextpage=project', $langs->trans("List internal projects"), 2, $showmode);
+			$newmenu->add('/projet/list.php?mainmenu=project&leftmenu=list&search_opp_status=openedopp&search_status=99&contextpage=lead', $langs->trans("ListOpenLeads"), 2, $showmode);
 
 			$newmenu->add("/projet/stats/index.php?leftmenu=projects", $langs->trans("Statistics"), 1, $user->hasRight('projet',  'lire'));
 
