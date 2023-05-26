@@ -159,6 +159,10 @@ class HookManager
 			return 0; // No hook available, do nothing.
 		}
 
+		if (!is_array($parameters)) {
+			if (!$parameters) $parameters = [];
+			else error_log("ERROR: executeHooks() \$parameters should be an array, got: ".json_encode($parameters));
+		}
 		$parameters['context'] = join(':', $this->contextarray);
 		//dol_syslog(get_class($this).'::executeHooks method='.$method." action=".$action." context=".$parameters['context']);
 
