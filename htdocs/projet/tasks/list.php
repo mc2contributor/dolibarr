@@ -1118,8 +1118,7 @@ if (!empty($conf->global->PROJECT_TIMES_SPENT_FORMAT)) {
 // --------------------------------------------------------------------
 $i = 0;
 $savnbfield = $totalarray['nbfield'];
-$totalarray = array();
-$totalarray['nbfield'] = 0;
+$totalarray = ['nbfield'=>0];
 $imaxinloop = ($limit ? min($num, $limit) : $num);
 while ($i < $imaxinloop) {
 	$obj = $db->fetch_object($resql);
@@ -1335,17 +1334,7 @@ while ($i < $imaxinloop) {
 				}
 				//else print '--:--';
 				print '</td>';
-				if (!$i) {
-					$totalarray['nbfield']++;
-				}
-				if (!$i) {
-					$totalarray['pos'][$totalarray['nbfield']] = 't.planned_workload';
-				}
-				$totalarray['val']['t.planned_workload'] += $obj->planned_workload;
-				if (!$i) {
-					$totalarray['totalplannedworkloadfield'] = $totalarray['nbfield'];
-				}
-				$totalarray['totalplannedworkload'] += $obj->planned_workload;
+				addToTotals($totalarray, $obj->planned_workload, 'planned_workload', $i, true, true);
 			}
 			// Time spent
 			if (!empty($arrayfields['t.duration_effective']['checked'])) {
@@ -1367,17 +1356,7 @@ while ($i < $imaxinloop) {
 					print '</a>';
 				}
 				print '</td>';
-				if (!$i) {
-					$totalarray['nbfield']++;
-				}
-				if (!$i) {
-					$totalarray['pos'][$totalarray['nbfield']] = 't.duration_effective';
-				}
-				$totalarray['val']['t.duration_effective'] += $obj->duration_effective;
-				if (!$i) {
-					$totalarray['totaldurationeffectivefield'] = $totalarray['nbfield'];
-				}
-				$totalarray['totaldurationeffective'] += $obj->duration_effective;
+				addToTotals('duration_effective', $obj->duration_effective, $totalarray, $i, true, true);
 			}
 			// Calculated progress
 			if (!empty($arrayfields['t.progress_calculated']['checked'])) {
@@ -1390,12 +1369,7 @@ while ($i < $imaxinloop) {
 					}
 				}
 				print '</td>';
-				if (!$i) {
-					$totalarray['nbfield']++;
-				}
-				if (!$i) {
-					$totalarray['totalprogress_calculatedfield'] = $totalarray['nbfield'];
-				}
+				addToTotals('progress_calculated', null, $totalarray, $i);
 			}
 			// Declared progress
 			if (!empty($arrayfields['t.progress']['checked'])) {
@@ -1404,17 +1378,8 @@ while ($i < $imaxinloop) {
 					print getTaskProgressBadge($object);
 				}
 				print '</td>';
-				if (!$i) {
-					$totalarray['nbfield']++;
-				}
-				if (!$i) {
-					$totalarray['pos'][$totalarray['nbfield']] = 't.progress';
-				}
-				$totalarray['val']['t.progress'] += ($obj->planned_workload * $obj->progress / 100);
-				if (!$i) {
-					$totalarray['totalprogress_declaredfield'] = $totalarray['nbfield'];
-				}
-				$totalarray['totaldurationdeclared'] += $obj->planned_workload * $obj->progress / 100;
+				// Was using both progress_declared and durationdeclared, but the latter seems like an error
+				addToTotals('progress_declared', $obj->planned_workload * $obj->progress / 100, $totalarray, $i, true, true);
 			}
 			// Progress summary
 			if (!empty($arrayfields['t.progress_summary']['checked'])) {
@@ -1423,12 +1388,7 @@ while ($i < $imaxinloop) {
 					print getTaskProgressView($object, false, false);
 				}
 				print '</td>';
-				if (!$i) {
-					$totalarray['nbfield']++;
-				}
-				if (!$i) {
-					$totalarray['totalprogress_summary'] = $totalarray['nbfield'];
-				}
+				addToTotals('progress_summary', null, $totalarray, $i);
 			}
 			// Budget for task
 			if (!empty($arrayfields['t.budget_amount']['checked'])) {
@@ -1437,17 +1397,7 @@ while ($i < $imaxinloop) {
 					print '<span class="amount">'.price($object->budget_amount, 0, $langs, 1, 0, 0, $conf->currency).'</span>';
 				}
 				print '</td>';
-				if (!$i) {
-					$totalarray['nbfield']++;
-				}
-				if (!$i) {
-					$totalarray['pos'][$totalarray['nbfield']] = 't.budget_amount';
-				}
-				$totalarray['val']['t.budget_amount'] += $obj->budget_amount;
-				if (!$i) {
-					$totalarray['totalbudget_amountfield'] = $totalarray['nbfield'];
-				}
-				$totalarray['totalbudgetamount'] += $obj->budget_amount;
+				addToTotals('budget_amount', $obj->budget_amount, $totalarray, $i, true, true);
 			}
 			// Time not billed
 			if (!empty($arrayfields['t.tobill']['checked'])) {
@@ -1460,15 +1410,7 @@ while ($i < $imaxinloop) {
 					print '<span class="opacitymedium">'.$langs->trans("NA").'</span>';
 				}
 				print '</td>';
-				if (!$i) {
-					$totalarray['nbfield']++;
-				}
-				if (!$i) {
-					$totalarray['pos'][$totalarray['nbfield']] = 't.tobill';
-				}
-				if (!$i) {
-					$totalarray['totaltobillfield'] = $totalarray['nbfield'];
-				}
+				addToTotals('tobill', null, $totalarray, $i, false, true);
 			}
 			// Time billed
 			if (!empty($arrayfields['t.billed']['checked'])) {
@@ -1481,15 +1423,7 @@ while ($i < $imaxinloop) {
 					print '<span class="opacitymedium">'.$langs->trans("NA").'</span>';
 				}
 				print '</td>';
-				if (!$i) {
-					$totalarray['nbfield']++;
-				}
-				if (!$i) {
-					$totalarray['pos'][$totalarray['nbfield']] = 't.billed';
-				}
-				if (!$i) {
-					$totalarray['totalbilledfield'] = $totalarray['nbfield'];
-				}
+				addToTotals('billed', null, $totalarray, $i, false, true);
 			}
 			// Extra fields
 			include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_print_fields.tpl.php';
@@ -1607,3 +1541,35 @@ print '</form>'."\n";
 // End of page
 llxFooter();
 $db->close();
+
+
+/**
+ *  Add field to $totalarray.
+ *  @param string $fieldName	Field name
+ *  @param mixed $value			Value to add. Null if not adding the value.
+ *  @param array $totalarray	Totals. To be modified.
+ *  @param int $i				Loop index. Some fields in $totalarray are only incremented if $i == 0.
+ *  @param bool $removeUnderscore	True to strip underscore from $fieldName for $totalarray['total'.$fieldName].
+ *  @param bool $includePos		True to add to $totalarray['pos'] (if $i == 0).
+ *
+ *  @return void
+**/
+function addToTotals(string $fieldName, $value, array &$totalarray, int $i, bool $removeUnderscore = true, bool $includePos = false): void
+{
+	$totalFieldName = 'total'.($removeUnderscore ? str_replace('_', '', $fieldName) : $fieldName);
+	if (!$i) {
+		$totalarray['nbfield']++;
+		if ($includePos) $totalarray['pos'][$totalarray['nbfield']] = $tFieldName;
+		$totalarray[$totalFieldName.'field'] = $totalarray['nbfield'];
+	}
+
+	if ($value === null) return;
+
+	$tFieldName = 't.'.$fieldName;
+	if (!isset($totalarray['val'])) $totalarray['val'] = [];
+	if (!isset($totalarray['val'][$tFieldName])) $totalarray['val'][$tFieldName] = $value;
+	else $totalarray['val'][$tFieldName] += $value;
+
+	if (!isset($totalarray[$totalFieldName])) $totalarray[$totalFieldname] = $value;
+	else $totalarray[$totalFieldName] += $value;
+}
