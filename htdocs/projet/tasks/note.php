@@ -132,7 +132,7 @@ if ($object->id > 0) {
 		$head = project_prepare_head($projectstatic);
 		print dol_get_fiche_head($head, $tab, $langs->trans("Project"), -1, ($projectstatic->public ? 'projectpub' : 'project'));
 
-		$param = ($mode == 'mine' ? '&mode=mine' : '');
+		$param = isset($mode) && $mode == 'mine' ? '&mode=mine' : '';
 		// Project card
 
 		$linkback = '<a href="'.DOL_URL_ROOT.'/projet/list.php?restore_lastsearch_values=1">'.$langs->trans("BackToList").'</a>';

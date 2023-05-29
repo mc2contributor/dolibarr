@@ -142,7 +142,7 @@ if ($object->id > 0) {
 
 		print dol_get_fiche_head($head, $tab, $langs->trans("Project"), -1, ($projectstatic->public ? 'projectpub' : 'project'));
 
-		$param = ($mode == 'mine' ? '&mode=mine' : '');
+		$param = isset($mode) && $mode == 'mine' ? '&mode=mine' : '';
 
 		// Project card
 
