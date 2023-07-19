@@ -3140,17 +3140,21 @@ class EmailCollector extends CommonObject
 								'header'=>$header,
 								'attachments'=>$attachments,
 							);
-							$reshook = $hookmanager->executeHooks('doCollectImapOneCollector', $parameters, $this, $operation['type']);
 
-							if ($reshook < 0) {
-								$errorforthisaction++;
-								$this->error = $hookmanager->resPrint;
-							}
-							if ($errorforthisaction) {
-								$errorforactions++;
-								$operationslog .= '<br>Hook doCollectImapOneCollector executed with error';
-							} else {
-								$operationslog .= '<br>Hook doCollectImapOneCollector executed without error';
+							$reshook = $hookmanager->executeHooks('filterImapOneCollector', $parameters, $this, $operation['type']);
+							if (!$reshook) {
+								$reshook = $hookmanager->executeHooks('doCollectImapOneCollector', $parameters, $this, $operation['type']);
+
+								if ($reshook < 0) {
+									$errorforthisaction++;
+									$this->error = $hookmanager->resPrint;
+								}
+								if ($errorforthisaction) {
+									$errorforactions++;
+									$operationslog .= '<br>Hook doCollectImapOneCollector executed with error';
+								} else {
+									$operationslog .= '<br>Hook doCollectImapOneCollector executed without error';
+								}
 							}
 						}
 
